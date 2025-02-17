@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SC_DragRigidbody2D : MonoBehaviour
@@ -20,8 +21,10 @@ public class SC_DragRigidbody2D : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-        
-            selectedRigidbody = GetRigidbodyFromMouseClick();
+            if(GetRigidbodyFromMouseClick().CompareTag("Player")){
+                selectedRigidbody = GetRigidbodyFromMouseClick();
+            }
+            
         }
 
         if (Input.GetMouseButtonUp(0))
