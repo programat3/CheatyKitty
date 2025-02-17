@@ -1,5 +1,14 @@
 {
   "dependencies": {
+    "com.gonked-games.bounded-paths": {
+      "version": "file:com.gonked-games.bounded-paths",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.unity.splines": "2.2.1",
+        "com.unity.burst": "1.8.4"
+      }
+    },
     "com.unity.2d.animation": {
       "version": "9.1.1",
       "depth": 1,
@@ -96,7 +105,7 @@
     },
     "com.unity.burst": {
       "version": "1.8.16",
-      "depth": 3,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -166,6 +175,24 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.settings-manager": {
+      "version": "2.0.1",
+      "depth": 2,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.com"
+    },
+    "com.unity.splines": {
+      "version": "2.6.1",
+      "depth": 1,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.ugui": "1.0.0",
+        "com.unity.mathematics": "1.2.1",
+        "com.unity.settings-manager": "1.0.3"
+      },
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
