@@ -7,6 +7,7 @@ public class CardDrag : MonoBehaviour
 {
     private Vector3 offset;
     private bool isDragging = false;
+    public GameObject self;
     private Vector3 originalPosition;
     private CardManager spawner; // Referencia al spawner
 
@@ -22,8 +23,8 @@ public class CardDrag : MonoBehaviour
 
     void OnMouseDown()
     {
-        offset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        isDragging = true;
+            offset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            isDragging = true;
     }
 
     void OnMouseDrag()
@@ -33,6 +34,7 @@ public class CardDrag : MonoBehaviour
             Vector3 newPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition) + offset;
             newPosition.z = 0; // Mantener en el mismo plano 2D
             transform.position = newPosition;
+            //Trigger MiniGame
         }
     }
 
@@ -74,9 +76,10 @@ public class CardDrag : MonoBehaviour
             Debug.Log("Carta eliminada al entrar en el área de visión.");
             if (spawner != null)
             {
-                spawner.SpawnCard(); // Generar nueva carta antes de eliminarse
+                spawner.SpawnCard(null); // Generar nueva carta antes de eliminarse
             }
             Destroy(gameObject); // Eliminar la carta
         }
     }
+
 }
