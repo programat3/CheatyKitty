@@ -4,19 +4,24 @@ using UnityEngine;
 
 public class MouseFollow : MonoBehaviour
 {
+    [SerializeField] private GameObject path;
+    [SerializeField] private GameObject temporizador;
+
+
     public float followSpeed = 10f;
     public float pickupRadius = 0.4f; // Tamaño del collider al recoger
-    private float normalRadius; // Tamaño normal del collider
+    private float normalRadius;
     private bool isDragging = false;
     private Vector3 startPosition; // Posición inicial
 
-    private CircleCollider2D circleCollider; // Referencia al collider
+    private CircleCollider2D circleCollider;
 
     void Start()
     {
+
         circleCollider = GetComponent<CircleCollider2D>();
-        normalRadius = circleCollider.radius; // Guardar el tamaño original
-        startPosition = transform.position; // Guardar posición inicial
+        normalRadius = circleCollider.radius;
+        startPosition = transform.position;
     }
 
     void Update()
@@ -30,13 +35,13 @@ public class MouseFollow : MonoBehaviour
     void OnMouseDown()
     {
         isDragging = true;
-        circleCollider.radius = pickupRadius; // Aumenta el tamaño del collider
+        circleCollider.radius = pickupRadius;
     }
 
     void OnMouseUp()
     {
         isDragging = false;
-        circleCollider.radius = normalRadius; // Vuelve al tamaño normal
+        circleCollider.radius = normalRadius;
     }
 
     void FollowMousePosition()
@@ -48,9 +53,26 @@ public class MouseFollow : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Path")) // Si toca "Path", reinicia la bola
+        if (collision.CompareTag("Path"))
         {
             Debug.Log("¡Chocaste con el camino! Reiniciando...");
+            ResetBall();
+        }
+        else if (collision.CompareTag("Manga"))
+        {
+            Debug.Log("¡Escondiste la tarjeta!");
+            
+            if (path != null) path.SetActive(false);
+            if (temporizador != null) temporizador.SetActive(false);
+
+            // Buscar el GameController y detener el temporizador
+            GameController gameController = FindObjectOfType<GameController>();
+            gameController.SumarPuntos(100);
+            if (gameController != null)
+            {
+                gameController.DesactivarTemporizador();
+            }
+
             ResetBall();
         }
     }
@@ -58,7 +80,7 @@ public class MouseFollow : MonoBehaviour
     void ResetBall()
     {
         transform.position = startPosition; // Mueve la bola al inicio
-        isDragging = false; // Detiene el seguimiento del mouse
-        circleCollider.radius = normalRadius; // Restablece el tamaño del collider
+        isDragging = false;
+        circleCollider.radius = normalRadius;
     }
 }

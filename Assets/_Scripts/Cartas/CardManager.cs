@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
+    /*
     public GameObject cardPrefab;// Prefab de la carta
     public Transform cardHolder;
     public Transform spawnPoint1;
@@ -33,4 +34,5 @@ public class CardManager : MonoBehaviour
         //}
         
     }
+    */
 }

@@ -4,14 +4,32 @@ using UnityEngine;
 
 public class CardClick : MonoBehaviour
 {
-    public GameObject targetObject; // El objeto que se activará/desactivará
+    public GameObject path; // Objeto que representa el camino
+    public GameObject temporizador; // Temporizador del juego
+    private GameController gameController;
+
+    void Start()
+    {
+        gameController = FindObjectOfType<GameController>(); // Buscar GameController en la escena
+    }
 
     void OnMouseDown()
     {
-        if (targetObject != null)
+        if (path != null)
         {
-            targetObject.SetActive(!targetObject.activeSelf); // Alterna el estado
-            Debug.Log("Objeto " + targetObject.name + " ahora está " + (targetObject.activeSelf ? "activo" : "inactivo"));
+            path.SetActive(true); // Activa el camino
         }
+
+        if (temporizador != null)
+        {
+            temporizador.SetActive(true); // Activa el temporizador
+        }
+
+        if (gameController != null)
+        {
+            gameController.ActivarTemporizador(); // Inicia el temporizador
+        }
+
+        Debug.Log("Carta clickeada: Camino y temporizador activados.");
     }
 }
