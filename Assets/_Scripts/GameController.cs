@@ -15,6 +15,9 @@ public class GameController : MonoBehaviour
     [SerializeField] private Slider slider;
     [SerializeField] private int vidas;
     [SerializeField] private int puntos;
+    [SerializeField] private float tiempoMinimo = 3f;  // El tiempo mínimo que puede llegar a ser el temporizador
+    [SerializeField] private float tiempoReduccionPor100Puntos = 0.5f; // Cuánto se reduce el tiempo por cada 100 puntos
+
 
     private int puntajeMaximo;
     private float tiempoActual;
@@ -64,15 +67,11 @@ public class GameController : MonoBehaviour
                 CambiarTemporizador(false);
             }
 
-            // 🔹 Dispara el evento cuando el tiempo se acaba
             OnTiempoTerminado?.Invoke();
-            
-            //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
             temporizador.SetActive(false);
             path.SetActive(false);
             DesactivarTemporizador();
-            
-            
         }
     }
 
@@ -86,7 +85,20 @@ public class GameController : MonoBehaviour
         tiempoActual = tiempoMaximo;
         slider.maxValue = tiempoMaximo;
         CambiarTemporizador(true);
+
+        // Reducir el tiempo según los puntos obtenidos
+        ReducirTiempoPorPuntos();
     }
+
+    private void ReducirTiempoPorPuntos()
+    {
+        // Cada 100 puntos se reduce el tiempo
+        int cantidadReducciones = puntos / 100;
+
+        // Asegurarse de que el tiempo no baje de 3 segundos
+        tiempoMaximo = Mathf.Max(tiempoMinimo, tiempoMaximo - cantidadReducciones * tiempoReduccionPor100Puntos);
+    }
+
 
     public void DesactivarTemporizador()
     {
