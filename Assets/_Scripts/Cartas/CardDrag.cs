@@ -4,53 +4,60 @@ using UnityEditor;
 using UnityEngine;
 public class CardDrag : MonoBehaviour
 {
-    public GameObject zonaDestinoObjeto;
+    public GameObject posicionIntermedia; // Primera posición a la que se moverá la carta
+    public GameObject zonaDestinoObjeto;  // Segunda posición (destino final)
     public float moveDuration = 1f;
 
-    private bool puedeMoverse = false; // Solo se moverá la carta que se haya seleccionado
+    private bool enIntermedia = false; // Para saber si la carta ya está en la posición intermedia
+    private bool puedeMoverse = false; // Solo se moverá si fue seleccionada
 
     private void Start()
     {
-        // Suscribirse al evento de MouseFollow
-        MouseFollow.OnBolaTocoManga += ActivarMovimiento;
+        // Suscribirse al evento cuando la bola toca la manga
+        MouseFollow.OnBolaTocoManga += MoverALaZonaDestino;
     }
 
     private void OnDestroy()
     {
-        // Evitar problemas al destruir el objeto
-        MouseFollow.OnBolaTocoManga -= ActivarMovimiento;
+        // Desuscribirse del evento para evitar errores
+        MouseFollow.OnBolaTocoManga -= MoverALaZonaDestino;
     }
 
     private void OnMouseDown()
     {
-        // Al hacer clic en la carta, esta se vuelve la seleccionada para moverse
-        puedeMoverse = true;
-    }
-
-    private void ActivarMovimiento()
-    {
-        if (puedeMoverse)
+        if (!enIntermedia && posicionIntermedia != null)
         {
-            StartCoroutine(MoverCartaAlCentro());
+            StartCoroutine(MoverCarta(posicionIntermedia.transform.position));
+            enIntermedia = true; // Indica que la carta ya se movió a la posición intermedia
+            puedeMoverse = true; // Marca la carta como seleccionada
         }
     }
 
-    private IEnumerator MoverCartaAlCentro()
+    private void MoverALaZonaDestino()
     {
-        if (zonaDestinoObjeto == null) yield break;
+        if (puedeMoverse && enIntermedia && zonaDestinoObjeto != null)
+        {
+            StartCoroutine(MoverCarta(zonaDestinoObjeto.transform.position, true));
+        }
+    }
 
+    private IEnumerator MoverCarta(Vector3 destino, bool destruirAlFinal = false)
+    {
         Vector3 startPosition = transform.position;
-        Vector3 targetPosition = zonaDestinoObjeto.transform.position;
         float elapsedTime = 0f;
 
         while (elapsedTime < moveDuration)
         {
-            transform.position = Vector3.Lerp(startPosition, targetPosition, elapsedTime / moveDuration);
+            transform.position = Vector3.Lerp(startPosition, destino, elapsedTime / moveDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.position = targetPosition;
-        Destroy(gameObject); // Destruye la carta al llegar
+        transform.position = destino;
+
+        if (destruirAlFinal)
+        {
+            Destroy(gameObject); // Destruye la carta cuando llega al destino final
+        }
     }
 }
