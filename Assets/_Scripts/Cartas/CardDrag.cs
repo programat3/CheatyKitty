@@ -8,9 +8,8 @@ public class CardDrag : MonoBehaviour
     public GameObject posicionIntermedia;  // Primera posición
     public GameObject zonaDestinoObjeto;   // Destino final
     public float moveDuration = 1f;
-    public GameObject cartaPrefab;         // Prefab para reemplazo
     private Vector3 posicionInicial;       // Guarda la posición inicial
-
+    public GameObject[] cartaPrefabs;
     private bool enIntermedia = false;
     private bool puedeMoverse = false;
     private bool tiempoTerminado = false;
@@ -69,9 +68,14 @@ public class CardDrag : MonoBehaviour
 
     private void ReemplazarCarta()
     {
-        if (cartaPrefab != null)
+        if (cartaPrefabs.Length > 0)
         {
-            Instantiate(cartaPrefab, posicionInicial, Quaternion.identity);
+            // Usamos la posición inicial guardada antes del movimiento
+            Vector3 posicionDondeEstaba = posicionInicial;
+
+            // Elegir un prefab aleatorio y generarlo en la posición donde estaba la carta
+            GameObject cartaRandom = cartaPrefabs[Random.Range(0, cartaPrefabs.Length)];
+            Instantiate(cartaRandom, posicionDondeEstaba, Quaternion.identity);
         }
     }
 
