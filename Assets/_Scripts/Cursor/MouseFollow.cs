@@ -2,23 +2,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class MouseFollow : MonoBehaviour
 {
     [SerializeField] private GameObject path;
     [SerializeField] private GameObject temporizador;
 
-
     public float followSpeed = 10f;
-    public float pickupRadius = 0.4f; // Tamaño del collider al recoger
+    public float pickupRadius = 0.4f;
     private float normalRadius;
     private bool isDragging = false;
-    private Vector3 startPosition; // Posición inicial
+    private Vector3 startPosition;
+
+    public bool colisionoManga = false;
 
     private CircleCollider2D circleCollider;
 
     void Start()
     {
-
         circleCollider = GetComponent<CircleCollider2D>();
         normalRadius = circleCollider.radius;
         startPosition = transform.position;
@@ -61,7 +62,11 @@ public class MouseFollow : MonoBehaviour
         else if (collision.CompareTag("Manga"))
         {
             Debug.Log("¡Escondiste la tarjeta!");
-            
+            colisionoManga = true;
+
+            // Aquí se llama al método en CardDrag para mover la carta
+            FindObjectOfType<CardDrag>().OnColisionoConManga();
+
             if (path != null) path.SetActive(false);
             if (temporizador != null) temporizador.SetActive(false);
 
@@ -74,6 +79,10 @@ public class MouseFollow : MonoBehaviour
             }
 
             ResetBall();
+        }
+        else
+        {
+            colisionoManga = false;
         }
     }
 

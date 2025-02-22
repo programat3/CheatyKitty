@@ -5,14 +5,13 @@ using Unity.VisualScripting;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
-
-
 public class GameController : MonoBehaviour
 {
     [SerializeField] private float tiempoMaximo;
     [SerializeField] private Slider slider;
     [SerializeField] private int vidas;
     [SerializeField] private int puntos;
+
     private int puntajeMaximo;
 
     private float tiempoActual;
@@ -24,16 +23,14 @@ public class GameController : MonoBehaviour
     public TextMeshProUGUI puntosText;
     public TextMeshProUGUI puntajeMaximoText;
 
-    public Transform cardHolder;
-    public Transform[] spawnPoints;
-    public GameObject cardPrefab;
+    public Transform[] spawnPoints; // Ya no es necesario cardHolder
+    private Transform lastSpawnPoint;
+    [SerializeField] private GameObject[] cardPrefabs;
 
     private void Start()
     {
-        //PlayerPrefs.DeleteAll(); Usar para borrar el tema de puntaje maximo
-
-        puntajeMaximo = PlayerPrefs.GetInt("PuntajeMaximo", 0);  // Carga el puntaje máximo, 0 es el valor por defecto si no hay ninguno guardado
-        ActualizarPuntajeMaximoUI();  // Actualiza la UI al inicio
+        puntajeMaximo = PlayerPrefs.GetInt("PuntajeMaximo", 0);
+        ActualizarPuntajeMaximoUI();
         ActualizarVidasUI();
         ActualizarPuntosUI();
         InicializarCartas();
@@ -51,7 +48,6 @@ public class GameController : MonoBehaviour
         if (tiempoActual >= 0) slider.value = tiempoActual;
         if (tiempoActual <= 0)
         {
-            Debug.Log("Tiempo agotado, pierdes una vida.");
             PerderVida();
             if (vidas > 0) ActivarTemporizador();
             else CambiarTemporizador(false);
@@ -78,7 +74,6 @@ public class GameController : MonoBehaviour
     public void PerderVida()
     {
         vidas--;
-        Debug.Log("Vidas restantes: " + vidas);
         ActualizarVidasUI();
         if (vidas <= 0) GameOver();
     }
@@ -89,39 +84,37 @@ public class GameController : MonoBehaviour
         if (puntos > puntajeMaximo)
         {
             puntajeMaximo = puntos;
-            Debug.Log("Nuevo puntaje máximo: " + puntajeMaximo);
-            ActualizarPuntajeMaximoUI();  // Actualiza la UI con el nuevo puntaje máximo
+            ActualizarPuntajeMaximoUI();
         }
-        Debug.Log("Puntos: " + puntos);
         ActualizarPuntosUI();
     }
 
     private void ActualizarVidasUI()
     {
-        if (vidasText != null) vidasText.text = "Vidas: " + vidas;
+        if (vidasText != null) vidasText.text = "" + vidas;
     }
 
     private void ActualizarPuntosUI()
     {
-        if (puntosText != null) puntosText.text = "Puntos: " + puntos;
+        if (puntosText != null) puntosText.text = "Score: " + puntos;
     }
 
     private void ActualizarPuntajeMaximoUI()
     {
         if (puntajeMaximoText != null)
-            puntajeMaximoText.text = "Puntaje máximo: " + puntajeMaximo;
+            puntajeMaximoText.text = "Max. Score: " + puntajeMaximo;
     }
 
     private void GameOver()
     {
-        Debug.Log("¡Game Over!");
-        PlayerPrefs.SetInt("PuntajeMaximo", puntajeMaximo);  // Guarda el puntaje máximo
+        PlayerPrefs.SetInt("PuntajeMaximo", puntajeMaximo);
         PlayerPrefs.Save();
         if (gameOverScreen != null) gameOverScreen.SetActive(true);
     }
 
     private void InicializarCartas()
     {
+        // Instanciamos las cartas en los puntos de spawn
         foreach (Transform spawnPoint in spawnPoints)
         {
             SpawnCard(spawnPoint);
@@ -130,16 +123,32 @@ public class GameController : MonoBehaviour
 
     public void SpawnCard(Transform spawnPoint)
     {
-        if (spawnPoint)
+        if (spawnPoint && cardPrefabs.Length > 0)
         {
-            GameObject newCard = Instantiate(cardPrefab, spawnPoint.position, Quaternion.identity, cardHolder);
+            // Seleccionamos aleatoriamente una carta del prefab
+            GameObject randomCardPrefab = cardPrefabs[Random.Range(0, cardPrefabs.Length)];
+
+            // Instanciamos la carta en la posición del spawnPoint
+            GameObject cardInstance = Instantiate(randomCardPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
         }
     }
 
     public void ReemplazarCarta(GameObject carta)
     {
-        Destroy(carta);
-        Invoke(nameof(SpawnNuevaCarta), 0.5f);
+        if (carta != null)
+        {
+            lastSpawnPoint = carta.transform;
+            Destroy(carta);
+            Invoke(nameof(SpawnNuevaCartaEnPosicion), 0.5f);
+        }
+    }
+
+    private void SpawnNuevaCartaEnPosicion()
+    {
+        if (lastSpawnPoint != null)
+        {
+            SpawnCard(lastSpawnPoint);
+        }
     }
 
     private void SpawnNuevaCarta()
