@@ -36,6 +36,8 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        SoundManager.instance.PlayMusic(0, 1f, true);  // Reproduce el primer clip en bucle
+        SoundManager.instance.PlayAdditionalMusic(3, 0.3f, true);  
         puntajeMaximo = PlayerPrefs.GetInt("PuntajeMaximo", 0);
         ActualizarPuntajeMaximoUI();
         ActualizarVidasUI();
@@ -108,8 +110,14 @@ public class GameController : MonoBehaviour
     public void PerderVida()
     {
         vidas--;
+        SoundManager.instance.PlayRandomSoundEffect("Dogs");
         ActualizarVidasUI();
-        if (vidas <= 0) GameOver();
+        if (vidas <= 0)
+        {
+            SoundManager.instance.PlayRandomSoundEffect("Lose");
+            GameOver();
+
+        }
     }
 
     public void SumarPuntos(int cantidad)

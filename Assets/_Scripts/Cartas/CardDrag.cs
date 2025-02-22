@@ -31,6 +31,7 @@ public class CardDrag : MonoBehaviour
     {
         if (!enIntermedia && posicionIntermedia != null && !tiempoTerminado)
         {
+            SoundManager.instance.PlayRandomSoundEffect("Move");
             StartCoroutine(MoverCarta(posicionIntermedia.transform.position));
             enIntermedia = true;
             puedeMoverse = true;
@@ -76,6 +77,8 @@ public class CardDrag : MonoBehaviour
             // Elegir un prefab aleatorio y generarlo en la posición donde estaba la carta
             GameObject cartaRandom = cartaPrefabs[Random.Range(0, cartaPrefabs.Length)];
             Instantiate(cartaRandom, posicionDondeEstaba, Quaternion.identity);
+            SoundManager.instance.PlayRandomSoundEffect("Cat");
+            SoundManager.instance.PlayRandomSoundEffect("Card");
         }
     }
 
@@ -84,6 +87,7 @@ public class CardDrag : MonoBehaviour
         tiempoTerminado = false;  // Reiniciar el estado
         enIntermedia = false;     // Reiniciar la posición de la carta
         puedeMoverse = false;     // Habilitar nuevamente el movimiento de la carta
+        SoundManager.instance.PlayRandomSoundEffect("Devolver");
         StartCoroutine(MoverCarta(posicionInicial));
     }
 }

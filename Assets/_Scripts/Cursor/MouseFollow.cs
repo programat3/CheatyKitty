@@ -73,9 +73,11 @@ public class MouseFollow : MonoBehaviour
             {
                 gameController.SumarPuntos(100);
                 gameController.DesactivarTemporizador();
+                
             }
 
             // Disparar el evento para que la carta seleccionada se mueva
+            SoundManager.instance.PlayRandomSoundEffect("Hide", 1f);
             OnBolaTocoManga?.Invoke();
 
             ResetBall();
