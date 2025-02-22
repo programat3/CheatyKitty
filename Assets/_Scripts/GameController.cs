@@ -36,9 +36,11 @@ public class GameController : MonoBehaviour
 
     private void Start()
     {
+        //PlayerPrefs.DeleteAll();
         SoundManager.instance.PlayMusic(0, 1f, true);  // Reproduce el primer clip en bucle
-        SoundManager.instance.PlayAdditionalMusic(3, 0.3f, true);  
+        SoundManager.instance.PlayAdditionalMusic(3, 0.3f, true);
         puntajeMaximo = PlayerPrefs.GetInt("PuntajeMaximo", 0);
+        Debug.Log("Puntaje Maximo Cargado: " + puntajeMaximo);  // Para depuración
         ActualizarPuntajeMaximoUI();
         ActualizarVidasUI();
         ActualizarPuntosUI();
