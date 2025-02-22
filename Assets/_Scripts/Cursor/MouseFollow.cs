@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System;
 
 public class MouseFollow : MonoBehaviour
 {
@@ -14,9 +14,10 @@ public class MouseFollow : MonoBehaviour
     private bool isDragging = false;
     private Vector3 startPosition;
 
-    public bool colisionoManga = false;
-
     private CircleCollider2D circleCollider;
+
+    // Evento que se activa cuando la bola toca la manga
+    public static event Action OnBolaTocoManga;
 
     void Start()
     {
@@ -62,33 +63,28 @@ public class MouseFollow : MonoBehaviour
         else if (collision.CompareTag("Manga"))
         {
             Debug.Log("¡Escondiste la tarjeta!");
-            colisionoManga = true;
-
-            // Aquí se llama al método en CardDrag para mover la carta
-            FindObjectOfType<CardDrag>().OnColisionoConManga();
 
             if (path != null) path.SetActive(false);
             if (temporizador != null) temporizador.SetActive(false);
 
             // Buscar el GameController y detener el temporizador
             GameController gameController = FindObjectOfType<GameController>();
-            gameController.SumarPuntos(100);
             if (gameController != null)
             {
+                gameController.SumarPuntos(100);
                 gameController.DesactivarTemporizador();
             }
 
+            // Disparar el evento para que la carta seleccionada se mueva
+            OnBolaTocoManga?.Invoke();
+
             ResetBall();
-        }
-        else
-        {
-            colisionoManga = false;
         }
     }
 
     void ResetBall()
     {
-        transform.position = startPosition; // Mueve la bola al inicio
+        transform.position = startPosition;
         isDragging = false;
         circleCollider.radius = normalRadius;
     }
