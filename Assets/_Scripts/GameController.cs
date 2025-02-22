@@ -1,29 +1,33 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Unity.VisualScripting;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+
+
 public class GameController : MonoBehaviour
 {
+    public static event System.Action OnTiempoTerminado; // 🔹 Evento agregado
+
     [SerializeField] private float tiempoMaximo;
     [SerializeField] private Slider slider;
     [SerializeField] private int vidas;
     [SerializeField] private int puntos;
 
     private int puntajeMaximo;
-
     private float tiempoActual;
     private bool tiempoActivado = false;
 
     public GameObject gameOverScreen;
     public GameObject temporizador;
+    public GameObject path;
     public TextMeshProUGUI vidasText;
     public TextMeshProUGUI puntosText;
     public TextMeshProUGUI puntajeMaximoText;
 
-    public Transform[] spawnPoints; // Ya no es necesario cardHolder
+    public Transform[] spawnPoints;
     private Transform lastSpawnPoint;
     [SerializeField] private GameObject[] cardPrefabs;
 
@@ -46,11 +50,29 @@ public class GameController : MonoBehaviour
     {
         tiempoActual -= Time.deltaTime;
         if (tiempoActual >= 0) slider.value = tiempoActual;
+
         if (tiempoActual <= 0)
         {
             PerderVida();
-            if (vidas > 0) ActivarTemporizador();
-            else CambiarTemporizador(false);
+
+            if (vidas > 0)
+            {
+                ActivarTemporizador();
+            }
+            else
+            {
+                CambiarTemporizador(false);
+            }
+
+            // 🔹 Dispara el evento cuando el tiempo se acaba
+            OnTiempoTerminado?.Invoke();
+            
+            //aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+            temporizador.SetActive(false);
+            path.SetActive(false);
+            DesactivarTemporizador();
+            
+            
         }
     }
 
@@ -114,7 +136,6 @@ public class GameController : MonoBehaviour
 
     private void InicializarCartas()
     {
-        // Instanciamos las cartas en los puntos de spawn
         foreach (Transform spawnPoint in spawnPoints)
         {
             SpawnCard(spawnPoint);
@@ -125,11 +146,8 @@ public class GameController : MonoBehaviour
     {
         if (spawnPoint && cardPrefabs.Length > 0)
         {
-            // Seleccionamos aleatoriamente una carta del prefab
             GameObject randomCardPrefab = cardPrefabs[Random.Range(0, cardPrefabs.Length)];
-
-            // Instanciamos la carta en la posici�n del spawnPoint
-            GameObject cardInstance = Instantiate(randomCardPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
+            Instantiate(randomCardPrefab, spawnPoint.position, Quaternion.identity, spawnPoint);
         }
     }
 

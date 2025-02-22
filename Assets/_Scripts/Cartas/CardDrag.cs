@@ -2,34 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+
 public class CardDrag : MonoBehaviour
 {
-    public GameObject posicionIntermedia; // Primera posición a la que se moverá la carta
-    public GameObject zonaDestinoObjeto;  // Segunda posición (destino final)
+    public GameObject posicionIntermedia;  // Primera posición
+    public GameObject zonaDestinoObjeto;   // Destino final
     public float moveDuration = 1f;
+    public GameObject cartaPrefab;         // Prefab para reemplazo
+    private Vector3 posicionInicial;       // Guarda la posición inicial
 
-    private bool enIntermedia = false; // Para saber si la carta ya está en la posición intermedia
-    private bool puedeMoverse = false; // Solo se moverá si fue seleccionada
+    private bool enIntermedia = false;
+    private bool puedeMoverse = false;
+    private bool tiempoTerminado = false;
 
     private void Start()
     {
-        // Suscribirse al evento cuando la bola toca la manga
+        posicionInicial = transform.position; // Guarda la posición original
         MouseFollow.OnBolaTocoManga += MoverALaZonaDestino;
+        GameController.OnTiempoTerminado += ResetearCarta;
     }
 
     private void OnDestroy()
     {
-        // Desuscribirse del evento para evitar errores
         MouseFollow.OnBolaTocoManga -= MoverALaZonaDestino;
+        GameController.OnTiempoTerminado -= ResetearCarta;
     }
 
     private void OnMouseDown()
     {
-        if (!enIntermedia && posicionIntermedia != null)
+        if (!enIntermedia && posicionIntermedia != null && !tiempoTerminado)
         {
             StartCoroutine(MoverCarta(posicionIntermedia.transform.position));
-            enIntermedia = true; // Indica que la carta ya se movió a la posición intermedia
-            puedeMoverse = true; // Marca la carta como seleccionada
+            enIntermedia = true;
+            puedeMoverse = true;
         }
     }
 
@@ -57,7 +62,24 @@ public class CardDrag : MonoBehaviour
 
         if (destruirAlFinal)
         {
-            Destroy(gameObject); // Destruye la carta cuando llega al destino final
+            ReemplazarCarta();
+            Destroy(gameObject);
         }
+    }
+
+    private void ReemplazarCarta()
+    {
+        if (cartaPrefab != null)
+        {
+            Instantiate(cartaPrefab, posicionInicial, Quaternion.identity);
+        }
+    }
+
+    private void ResetearCarta()
+    {
+        tiempoTerminado = false;  // Reiniciar el estado
+        enIntermedia = false;     // Reiniciar la posición de la carta
+        puedeMoverse = false;     // Habilitar nuevamente el movimiento de la carta
+        StartCoroutine(MoverCarta(posicionInicial));
     }
 }
