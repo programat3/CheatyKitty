@@ -25,7 +25,9 @@ public class GameController : MonoBehaviour
 
     public GameObject gameOverScreen;
     public GameObject temporizador;
-    public GameObject path;
+    public GameObject path1;
+    public GameObject path2;
+    public GameObject path3;
     public TextMeshProUGUI vidasText;
     public TextMeshProUGUI puntosText;
     public TextMeshProUGUI puntajeMaximoText;
@@ -74,7 +76,9 @@ public class GameController : MonoBehaviour
             OnTiempoTerminado?.Invoke();
 
             temporizador.SetActive(false);
-            path.SetActive(false);
+            path1.SetActive(false);
+            path2.SetActive(false);
+            path3.SetActive(false);
             DesactivarTemporizador();
         }
     }
