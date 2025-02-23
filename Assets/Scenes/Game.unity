@@ -1221,7 +1221,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalCursor: {fileID: 2800000, guid: 56bb75d0023b4ee4c9e08fb93148393e, type: 3}
   transparentCursor: {fileID: 2800000, guid: 7631c73b414443f46824ed6b268d4815, type: 3}
-  hotspot: {x: 54, y: 35}
+  hotspot: {x: 26, y: 13}
 --- !u!4 &431330361
 Transform:
   m_ObjectHideFlags: 0
